@@ -75,21 +75,11 @@ your-model-folder/
 ## 📥 **Where to Get Compatible Models**
 
 ### **🤗 From HuggingFace Hub**
-- [HuggingGGUF Downloder](https://github.com/LMLK-seal/HuggingGGUF)
+- [Huggingface Models](https://huggingface.co/models)
 
-### **🐍 Using Python (Automatic Download)**
-```python
-from transformers import AutoModel, AutoTokenizer
+### **🐍 Using Python Downloder (Automatic Download)**
 
-# This creates the correct folder structure automatically
-model_name = "bert-base-uncased"
-model = AutoModel.from_pretrained(model_name)
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-
-# Save to local folder with correct structure
-model.save_pretrained("./my-models/bert-base-uncased")
-tokenizer.save_pretrained("./my-models/bert-base-uncased")
-```
+[HuggingGGUF Downloder](https://github.com/LMLK-seal/HuggingGGUF)
 
 ## ✅ **Examples of Compatible Models**
 
