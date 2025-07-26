@@ -75,7 +75,7 @@ your-model-folder/
 ## 📥 **Where to Get Compatible Models**
 
 ### **🤗 From HuggingFace Hub**
-- [HuggingGGUF](https://github.com/LMLK-seal/HuggingGGUF)
+- [HuggingGGUF Dwonloder](https://github.com/LMLK-seal/HuggingGGUF)
 
 ### **🐍 Using Python (Automatic Download)**
 ```python
