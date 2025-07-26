@@ -390,9 +390,6 @@ pruner.knowledge_distillation_pruning(
 - ❌ **Cons**: Requires training data, complex process
 - 🎯 **Best for**: Creating highly optimized models from scratch
 
-### 💻 **Screenshot**
-![GUI](https://github.com/LMLK-seal/AI-Model-Pruner/blob/main/Preview.png?raw=true)
-
 ### 🔄 **Comprehensive Pipeline**
 ```python
 # "Full Treatment" - Combined strategies
@@ -421,42 +418,8 @@ ai-model-pruner/
 ├── 📋 requirements.txt       # Dependencies
 ```
 
-## 🔧 API Reference
-
-### Core Class: `ModelPruner`
-
-```python
-from model_pruner import ModelPruner
-
-# Initialize pruner
-pruner = ModelPruner(
-    model_path="path/to/model",
-    output_path="path/to/output", 
-    target_reduction=0.75
-)
-
-# Load model
-pruner.load_model()
-
-# Apply pruning strategy
-pruner.structured_pruning(reduction_ratio=0.3)
-
-# Validate and save
-pruner.validate_model_output()
-pruner.save_pruned_model()
-```
-
-### Key Methods
-
-| Method | Description | Parameters |
-|--------|-------------|------------|
-| `load_model()` | Load model and tokenizer | None |
-| `magnitude_based_pruning()` | Remove smallest weights | `sparsity_ratio: float` |
-| `structured_pruning()` | Remove entire structures | `reduction_ratio: float` |
-| `gradual_magnitude_pruning()` | Iterative pruning | `initial_sparsity, final_sparsity, steps` |
-| `knowledge_distillation_pruning()` | Train student model | `student_ratio, epochs, learning_rate` |
-| `optimize_model_size()` | Full pipeline | None |
-| `validate_model_output()` | Test model functionality | `test_input_text: str` |
+### 💻 **Screenshot**
+![GUI](https://github.com/LMLK-seal/AI-Model-Pruner/blob/main/Preview.png?raw=true)
 
 ### 🐛 Bug Reports
 Please use the [issue tracker](https://github.com/LMLK-seal/ai-model-pruner/issues) to report bugs.
