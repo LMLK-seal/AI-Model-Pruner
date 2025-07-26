@@ -1,4 +1,4 @@
-<img width="570" height="543" alt="image" src="https://github.com/user-attachments/assets/4d857cf2-faa1-4460-a2e4-d93f0c770152" /># 🚀 Advanced AI Model Pruner
+# 🚀 Advanced AI Model Pruner
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-1.9+-red.svg)](https://pytorch.org/)
