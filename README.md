@@ -10,6 +10,8 @@
 
 A comprehensive toolkit for pruning large language models and neural networks with multiple advanced strategies. Features both command-line and GUI interfaces for maximum flexibility.
 
+![GUI](https://github.com/LMLK-seal/AI-Model-Pruner/blob/main/Preview.png?raw=true)
+
 ## ✨ Features
 
 ### 🔧 **Multiple Pruning Strategies**
@@ -417,9 +419,6 @@ ai-model-pruner/
 ├── 📖 README.md              # This file
 ├── 📋 requirements.txt       # Dependencies
 ```
-
-### 💻 **Screenshot**
-![GUI](https://github.com/LMLK-seal/AI-Model-Pruner/blob/main/Preview.png?raw=true)
 
 ### 🐛 Bug Reports
 Please use the [issue tracker](https://github.com/LMLK-seal/ai-model-pruner/issues) to report bugs.
