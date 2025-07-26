@@ -1,0 +1,58 @@
+# AI Model Pruner - Requirements
+# Core deep learning frameworks
+torch>=1.9.0
+torchvision>=0.10.0
+torchaudio>=0.9.0
+
+# HuggingFace ecosystem
+transformers>=4.20.0
+datasets>=2.0.0
+tokenizers>=0.12.0
+
+# Scientific computing
+numpy>=1.21.0
+scipy>=1.7.0
+
+# GUI framework
+customtkinter>=5.0.0
+
+# Utilities and helpers
+tqdm>=4.64.0
+pathlib2>=2.3.7
+argparse>=1.4.0
+
+# Optional: Accelerated training (if available)
+accelerate>=0.20.0
+
+# For model quantization and optimization
+# Note: Some quantization features require specific PyTorch versions
+# torch-audio and torch-vision versions should match torch version
+
+# Development and testing (optional)
+pytest>=7.0.0
+pytest-cov>=4.0.0
+
+# For better logging and progress bars
+colorama>=0.4.4
+rich>=12.0.0
+
+# Memory management and garbage collection utilities
+psutil>=5.9.0
+
+# For handling different file formats
+pickle5>=0.0.11; python_version < "3.8"
+
+# Jupyter notebook support (optional)
+jupyter>=1.0.0
+ipywidgets>=7.7.0
+
+# For advanced model analysis (optional)
+matplotlib>=3.5.0
+seaborn>=0.11.0
+
+# Additional HuggingFace utilities
+huggingface-hub>=0.14.0
+
+# For CUDA support (automatically installs appropriate version)
+# Uncomment the line below if you need specific CUDA version
+# torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
