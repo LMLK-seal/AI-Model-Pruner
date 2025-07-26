@@ -79,7 +79,7 @@ your-model-folder/
 
 ### **🐍 Using Python Downloder (Automatic Download)**
 
-[HuggingGGUF Downloder](https://github.com/LMLK-seal/HuggingGGUF)
+- [HuggingGGUF Downloder](https://github.com/LMLK-seal/HuggingGGUF)
 
 ## ✅ **Examples of Compatible Models**
 
