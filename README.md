@@ -1,4 +1,4 @@
-# 🚀 Advanced AI Model Pruner
+<img width="570" height="543" alt="image" src="https://github.com/user-attachments/assets/4d857cf2-faa1-4460-a2e4-d93f0c770152" /># 🚀 Advanced AI Model Pruner
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-1.9+-red.svg)](https://pytorch.org/)
@@ -9,8 +9,6 @@
 > 🎯 **Reduce AI model size by up to 90% while maintaining performance quality**
 
 A comprehensive toolkit for pruning large language models and neural networks with multiple advanced strategies. Features both command-line and GUI interfaces for maximum flexibility.
-
-![Model Pruner Demo](https://via.placeholder.com/800x400/1e1e1e/ffffff?text=AI+Model+Pruner+GUI)
 
 ## ✨ Features
 
@@ -391,6 +389,9 @@ pruner.knowledge_distillation_pruning(
 - ✅ **Pros**: Clean optimized models, high potential
 - ❌ **Cons**: Requires training data, complex process
 - 🎯 **Best for**: Creating highly optimized models from scratch
+
+### 💻 **Screenshot**
+![GUI](https://github.com/LMLK-seal/AI-Model-Pruner/blob/main/Preview.png?raw=true)
 
 ### 🔄 **Comprehensive Pipeline**
 ```python
