@@ -31,16 +31,12 @@ A comprehensive toolkit for pruning large language models and neural networks wi
 - **🔍 Model Validation** - Automatic output verification
 - **📈 Detailed Reporting** - Comprehensive pruning statistics
 
-  ---
+---
 
 ## 📁 Input Model Folder Structure Guide
 
 <details>
 <summary>🖼️ View Input Model Folder Structure Guide</summary>
-
-# 📁 Input Model Folder Structure Guide
-
-## 🎯 **What the AI Model Pruner Expects**
 
 The AI Model Pruner is designed to work with **HuggingFace-compatible models**. When you select an input model folder, it should contain the standard files that HuggingFace models use.
 
@@ -79,13 +75,7 @@ your-model-folder/
 ## 📥 **Where to Get Compatible Models**
 
 ### **🤗 From HuggingFace Hub**
-```bash
-# Download any model from HuggingFace
-git lfs install
-git clone https://huggingface.co/bert-base-uncased
-git clone https://huggingface.co/gpt2
-git clone https://huggingface.co/microsoft/DialoGPT-medium
-```
+- [HuggingGGUF](https://github.com/LMLK-seal/HuggingGGUF)
 
 ### **🐍 Using Python (Automatic Download)**
 ```python
