@@ -219,19 +219,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **📊 Datasets Library** - For easy dataset integration
 - **🎨 CustomTkinter** - For the modern GUI framework
 
-## 📚 Citation
-
-If you use this tool in your research, please cite:
-
-```bibtex
-@software{ai_model_pruner,
-  title = {Advanced AI Model Pruner},
-  author = {Your Name},
-  year = {2024},
-  url = {https://github.com/yourusername/ai-model-pruner}
-}
-```
-
 ## 📞 Support
 
 - **📖 Documentation**: [Wiki](https://github.com/LMLK-seal/ai-model-pruner/wiki)
@@ -245,6 +232,6 @@ If you use this tool in your research, please cite:
 
 **⭐ Star this repo if it helped you!**
 
-Made with ❤️ by [Your Name](https://github.com/LMLK-seal)
+Made with ❤️ by [LMLK-seal](https://github.com/LMLK-seal)
 
 </div>
