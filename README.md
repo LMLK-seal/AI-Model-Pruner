@@ -224,8 +224,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **📖 Documentation**: [Wiki](https://github.com/LMLK-seal/ai-model-pruner/wiki)
 - **💬 Discussions**: [GitHub Discussions](https://github.com/LMLK-seal/ai-model-pruner/discussions)
 - **🐛 Issues**: [Issue Tracker](https://github.com/LMLK-seal/ai-model-pruner/issues)
-- **📧 Email**: support@yourproject.com
-
 ---
 
 <div align="center">
