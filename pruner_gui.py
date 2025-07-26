@@ -3,10 +3,9 @@
 import customtkinter as ctk
 from tkinter import filedialog, messagebox
 import threading
-import sys
-import io
-from pathlib import Path
-import logging  #
+import logging
+import traceback
+from datetime import datetime
 
 # Import the enhanced pruner logic from the other file
 from model_pruner import ModelPruner, logger
@@ -15,19 +14,17 @@ class PrunerApp(ctk.CTk):
     def __init__(self):
         super().__init__()
 
-        self.title("Advanced AI Model Pruner")
-        self.geometry("800x650")
+        self.title("Advanced AI Model Pruner (Production Grade)")
+        self.geometry("800x700")
         ctk.set_appearance_mode("dark")
         ctk.set_default_color_theme("blue")
         
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(2, weight=1)
 
-        # --- UI Elements ---
         self.create_widgets()
 
     def create_widgets(self):
-        # Frame for file paths
         path_frame = ctk.CTkFrame(self)
         path_frame.grid(row=0, column=0, padx=20, pady=10, sticky="ew")
         path_frame.grid_columnconfigure(1, weight=1)
@@ -46,14 +43,13 @@ class PrunerApp(ctk.CTk):
         self.output_browse_button = ctk.CTkButton(path_frame, text="Browse...", command=self.browse_output)
         self.output_browse_button.grid(row=1, column=2, padx=10, pady=10)
 
-        # Frame for settings
         settings_frame = ctk.CTkFrame(self)
         settings_frame.grid(row=1, column=0, padx=20, pady=10, sticky="ew")
         settings_frame.grid_columnconfigure(1, weight=1)
 
         self.strategy_label = ctk.CTkLabel(settings_frame, text="Pruning Strategy:")
         self.strategy_label.grid(row=0, column=0, padx=10, pady=10, sticky="w")
-        self.strategy_menu = ctk.CTkOptionMenu(settings_frame, values=['comprehensive', 'gradual', 'structured', 'magnitude', 'distillation'])
+        self.strategy_menu = ctk.CTkOptionMenu(settings_frame, values=['comprehensive', 'gradual', 'structured', 'magnitude', 'distillation'], command=self.update_estimation)
         self.strategy_menu.grid(row=0, column=1, padx=10, pady=10, sticky="w")
 
         self.reduction_label = ctk.CTkLabel(settings_frame, text="Target Reduction: 75%")
@@ -66,13 +62,15 @@ class PrunerApp(ctk.CTk):
         self.validate_check.grid(row=0, column=2, padx=20, pady=10)
         self.validate_check.select()
 
-        # Frame for output log
+        self.time_estimation_label = ctk.CTkLabel(settings_frame, text="Est. Time: ~45-120+ mins", text_color="gray")
+        self.time_estimation_label.grid(row=2, column=0, columnspan=3, padx=10, pady=5, sticky="w")
+
         log_frame = ctk.CTkFrame(self)
         log_frame.grid(row=2, column=0, padx=20, pady=10, sticky="nsew")
         log_frame.grid_rowconfigure(0, weight=1)
         log_frame.grid_columnconfigure(0, weight=1)
 
-        self.log_textbox = ctk.CTkTextbox(log_frame, wrap="word")
+        self.log_textbox = ctk.CTkTextbox(log_frame, wrap="word", font=("Courier New", 10))
         self.log_textbox.grid(row=0, column=0, sticky="nsew")
         self.log_textbox.insert("end", "Welcome to the AI Model Pruner!\n\n")
         self.log_textbox.insert("end", "1. Select the input model folder.\n")
@@ -80,7 +78,6 @@ class PrunerApp(ctk.CTk):
         self.log_textbox.insert("end", "3. Choose a strategy and reduction target.\n")
         self.log_textbox.insert("end", "4. Click 'Start Pruning'.\n")
 
-        # Progress bar and start button
         self.progress_bar = ctk.CTkProgressBar(self)
         self.progress_bar.grid(row=3, column=0, padx=20, pady=5, sticky="ew")
         self.progress_bar.set(0)
@@ -103,9 +100,21 @@ class PrunerApp(ctk.CTk):
     def update_reduction_label(self, value):
         self.reduction_label.configure(text=f"Target Reduction: {int(value*100)}%")
 
+    def update_estimation(self, strategy: str):
+        estimations = {
+            'magnitude': "Fast (< 5 mins)",
+            'structured': "Fast (< 5 mins)",
+            'distillation': "Slow (15-45+ mins)",
+            'gradual': "Very Slow (30-90+ mins)",
+            'comprehensive': "Very Slow (45-120+ mins)"
+        }
+        self.time_estimation_label.configure(text=f"Est. Time: {estimations.get(strategy, 'N/A')}")
+
     def log(self, message):
-        """Safely appends a message to the log textbox from any thread."""
-        self.log_textbox.insert("end", message + "\n")
+        self.after(0, self._update_log_textbox, message)
+
+    def _update_log_textbox(self, message):
+        self.log_textbox.insert("end", str(message) + "\n")
         self.log_textbox.see("end")
 
     def start_pruning_thread(self):
@@ -127,42 +136,40 @@ class PrunerApp(ctk.CTk):
         pruning_thread.start()
 
     def run_pruning_task(self, input_path, output_path):
-        """The actual pruning logic that runs in a background thread."""
+        gui_handler = None
         try:
-            # Redirect logger output to the GUI
-            log_stream = io.StringIO()
-            handler = logging.StreamHandler(log_stream)
-            handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
-            logger.addHandler(handler)
-            
-            self.log_textbox.delete("1.0", "end")
+            class GuiLogger(logging.Handler):
+                def __init__(self, log_func):
+                    super().__init__()
+                    self.log_func = log_func
+                
+                def emit(self, record):
+                    msg = self.format(record)
+                    self.log_func(msg)
+
+            gui_handler = GuiLogger(self.log)
+            gui_handler.setFormatter(logging.Formatter('%(levelname)s: %(message)s'))
+            logger.addHandler(gui_handler)
+            logger.setLevel(logging.INFO)
+
+            self.after(0, self.log_textbox.delete, "1.0", "end")
             self.log("Starting pruning process...")
 
-            # --- Get GUI settings ---
             strategy = self.strategy_menu.get()
             reduction = self.reduction_slider.get()
             validate = self.validate_check.get()
 
-            # --- Initialize and run pruner ---
             pruner = ModelPruner(
                 model_path=input_path,
                 output_path=output_path,
                 target_reduction=reduction
             )
             
-            # This is a bit of a hack to stream logs, but effective for this app
-            def update_log():
-                log_contents = log_stream.getvalue()
-                if log_contents:
-                    self.log_textbox.insert("end", log_contents)
-                    self.log_textbox.see("end")
-                    log_stream.truncate(0)
-                    log_stream.seek(0)
-                if pruning_thread.is_alive():
-                    self.after(500, update_log)
-
-            pruning_thread = threading.current_thread()
-            self.after(500, update_log)
+            pruner.pruning_settings = {
+                'strategy': strategy,
+                'reduction': reduction,
+                'timestamp': datetime.now().isoformat()
+            }
             
             pruner.load_model()
             
@@ -171,9 +178,9 @@ class PrunerApp(ctk.CTk):
             elif strategy == 'structured':
                 pruner.structured_pruning(reduction_ratio=reduction)
             elif strategy == 'gradual':
-                pruner.gradual_magnitude_pruning(final_sparsity=reduction, steps=5)
+                pruner.gradual_magnitude_pruning(final_sparsity=reduction)
             elif strategy == 'distillation':
-                pruner.knowledge_distillation_pruning(student_ratio=1-reduction, epochs=3)
+                pruner.knowledge_distillation_pruning(student_ratio=1-reduction)
             else: # comprehensive
                 pruner.optimize_model_size()
             
@@ -188,15 +195,14 @@ class PrunerApp(ctk.CTk):
             
         except Exception as e:
             self.log(f"\n\n--- AN ERROR OCCURRED ---\n{e}")
-            import traceback
             self.log(traceback.format_exc())
             messagebox.showerror("Pruning Failed", f"An error occurred: {e}")
         finally:
-            # --- Reset GUI state ---
-            self.progress_bar.stop()
-            self.progress_bar.set(0)
-            self.start_button.configure(state="normal", text="Start Pruning")
-            logger.removeHandler(handler) # Clean up logger
+            self.after(0, self.progress_bar.stop)
+            self.after(0, self.progress_bar.set, 0)
+            self.after(0, self.start_button.configure, {"state": "normal", "text": "Start Pruning"})
+            if gui_handler:
+                logger.removeHandler(gui_handler)
 
 if __name__ == "__main__":
     app = PrunerApp()
