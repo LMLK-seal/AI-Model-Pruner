@@ -31,6 +31,281 @@ A comprehensive toolkit for pruning large language models and neural networks wi
 - **🔍 Model Validation** - Automatic output verification
 - **📈 Detailed Reporting** - Comprehensive pruning statistics
 
+  ---
+
+## 📁 Input Model Folder Structure Guide
+
+<details>
+<summary>🖼️ View Input Model Folder Structure Guide</summary>
+
+# 📁 Input Model Folder Structure Guide
+
+## 🎯 **What the AI Model Pruner Expects**
+
+The AI Model Pruner is designed to work with **HuggingFace-compatible models**. When you select an input model folder, it should contain the standard files that HuggingFace models use.
+
+## 📂 **Required Folder Structure**
+
+### **✅ Standard HuggingFace Model Structure**
+
+```
+your-model-folder/
+├── 📄 config.json              # ← REQUIRED: Model architecture configuration
+├── 🧠 pytorch_model.bin        # ← REQUIRED: Model weights (PyTorch format)
+│   OR
+├── 🧠 model.safetensors         # ← ALTERNATIVE: Model weights (SafeTensors format)
+├── 🔤 tokenizer.json           # ← REQUIRED: Tokenizer configuration
+├── 🔤 tokenizer_config.json    # ← REQUIRED: Tokenizer settings
+├── 📝 vocab.txt                # ← REQUIRED: Vocabulary file
+│   OR
+├── 📝 vocab.json               # ← ALTERNATIVE: Vocabulary (JSON format)
+├── 📝 merges.txt               # ← OPTIONAL: BPE merges (for some tokenizers)
+└── 📋 special_tokens_map.json  # ← OPTIONAL: Special token mappings
+```
+
+### **🔍 File Descriptions**
+
+| **File** | **Purpose** | **Required?** | **What it Contains** |
+|----------|-------------|---------------|---------------------|
+| `config.json` | 🏗️ Architecture | ✅ **YES** | Model dimensions, layer count, attention heads |
+| `pytorch_model.bin` | 🧠 Weights | ✅ **YES** | All trained parameters (billions of numbers) |
+| `model.safetensors` | 🧠 Weights | ✅ **ALT** | Same as above, but safer format |
+| `tokenizer.json` | 🔤 Text Processing | ✅ **YES** | How to convert text to numbers |
+| `tokenizer_config.json` | ⚙️ Tokenizer Settings | ✅ **YES** | Tokenizer behavior configuration |
+| `vocab.txt` / `vocab.json` | 📝 Vocabulary | ✅ **YES** | All words/tokens the model knows |
+| `merges.txt` | 🔗 BPE Rules | ❓ **MAYBE** | Word splitting rules (GPT-style models) |
+| `special_tokens_map.json` | 🏷️ Special Tokens | ❓ **OPTIONAL** | [CLS], [SEP], [PAD] token definitions |
+
+## 📥 **Where to Get Compatible Models**
+
+### **🤗 From HuggingFace Hub**
+```bash
+# Download any model from HuggingFace
+git lfs install
+git clone https://huggingface.co/bert-base-uncased
+git clone https://huggingface.co/gpt2
+git clone https://huggingface.co/microsoft/DialoGPT-medium
+```
+
+### **🐍 Using Python (Automatic Download)**
+```python
+from transformers import AutoModel, AutoTokenizer
+
+# This creates the correct folder structure automatically
+model_name = "bert-base-uncased"
+model = AutoModel.from_pretrained(model_name)
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+# Save to local folder with correct structure
+model.save_pretrained("./my-models/bert-base-uncased")
+tokenizer.save_pretrained("./my-models/bert-base-uncased")
+```
+
+## ✅ **Examples of Compatible Models**
+
+### **📝 Text Models (BERT-style)**
+```
+bert-base-uncased/
+├── config.json
+├── pytorch_model.bin
+├── tokenizer.json
+├── tokenizer_config.json
+├── vocab.txt
+└── special_tokens_map.json
+```
+
+### **💬 Generation Models (GPT-style)**
+```
+gpt2/
+├── config.json
+├── pytorch_model.bin
+├── tokenizer.json
+├── tokenizer_config.json
+├── vocab.json
+├── merges.txt
+└── special_tokens_map.json
+```
+
+### **🔄 Encoder-Decoder Models (T5-style)**
+```
+t5-small/
+├── config.json
+├── pytorch_model.bin
+├── tokenizer.json
+├── tokenizer_config.json
+├── spiece.model              # ← SentencePiece tokenizer
+└── special_tokens_map.json
+```
+
+## ❌ **What WON'T Work**
+
+### **🚫 Unsupported Formats**
+```
+❌ pure-pytorch-model/
+├── model.pth                 # Raw PyTorch state dict
+└── custom_config.py          # Custom Python configuration
+
+❌ tensorflow-model/
+├── saved_model.pb            # TensorFlow format
+└── variables/
+
+❌ onnx-model/
+├── model.onnx                # ONNX format
+└── config.yaml
+
+❌ custom-format/
+├── weights.dat               # Custom binary format
+└── architecture.xml          # Custom config
+```
+
+## 🔧 **How to Convert Models**
+
+### **🔄 From PyTorch State Dict**
+```python
+import torch
+from transformers import AutoConfig, AutoModel
+
+# If you have a raw PyTorch model
+state_dict = torch.load("model.pth")
+
+# You need to create a compatible config
+config = AutoConfig.from_pretrained("bert-base-uncased")  # Use similar model as template
+model = AutoModel.from_config(config)
+model.load_state_dict(state_dict)
+
+# Save in HuggingFace format
+model.save_pretrained("./converted-model")
+```
+
+### **🔄 From TensorFlow**
+```python
+from transformers import TFAutoModel, AutoModel
+
+# Load TensorFlow model
+tf_model = TFAutoModel.from_pretrained("tf-model-path", from_tf=True)
+
+# Convert to PyTorch
+pytorch_model = AutoModel.from_pretrained("tf-model-path", from_tf=True)
+pytorch_model.save_pretrained("./converted-model")
+```
+
+## 🕵️ **How to Verify Your Model Folder**
+
+### **🔍 Quick Check Script**
+```python
+import os
+from pathlib import Path
+
+def check_model_folder(folder_path):
+    folder = Path(folder_path)
+    
+    # Required files
+    required = ["config.json", "tokenizer_config.json"]
+    
+    # Need either pytorch_model.bin OR model.safetensors
+    weights_files = ["pytorch_model.bin", "model.safetensors"]
+    
+    # Need either vocab.txt OR vocab.json
+    vocab_files = ["vocab.txt", "vocab.json"]
+    
+    print(f"🔍 Checking {folder}...")
+    
+    # Check required files
+    for file in required:
+        if (folder / file).exists():
+            print(f"✅ {file} - Found")
+        else:
+            print(f"❌ {file} - Missing")
+    
+    # Check weights
+    weights_found = any((folder / f).exists() for f in weights_files)
+    if weights_found:
+        found_weight = next(f for f in weights_files if (folder / f).exists())
+        print(f"✅ {found_weight} - Found")
+    else:
+        print(f"❌ No weight files found ({', '.join(weights_files)})")
+    
+    # Check vocab
+    vocab_found = any((folder / f).exists() for f in vocab_files)
+    if vocab_found:
+        found_vocab = next(f for f in vocab_files if (folder / f).exists())
+        print(f"✅ {found_vocab} - Found")
+    else:
+        print(f"❌ No vocabulary files found ({', '.join(vocab_files)})")
+
+# Usage
+check_model_folder("./my-model-folder")
+```
+
+### **🧪 Test Load Script**
+```python
+from transformers import AutoModel, AutoTokenizer, AutoConfig
+
+def test_model_loading(model_path):
+    try:
+        print(f"🧪 Testing model loading from {model_path}...")
+        
+        # Try to load config
+        config = AutoConfig.from_pretrained(model_path, trust_remote_code=True)
+        print("✅ Config loaded successfully")
+        
+        # Try to load model
+        model = AutoModel.from_pretrained(model_path, trust_remote_code=True)
+        print("✅ Model loaded successfully")
+        
+        # Try to load tokenizer
+        tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
+        print("✅ Tokenizer loaded successfully")
+        
+        print(f"🎉 Model is compatible! Parameters: {model.num_parameters():,}")
+        return True
+        
+    except Exception as e:
+        print(f"❌ Error loading model: {e}")
+        return False
+
+# Usage
+test_model_loading("./my-model-folder")
+```
+
+## 💡 **Pro Tips**
+
+### **🎯 Best Practices**
+1. **Always test load** your model before pruning
+2. **Keep backups** of original model files
+3. **Check file sizes** - `pytorch_model.bin` should be the largest file
+4. **Verify permissions** - ensure the pruner can read all files
+
+### **🚀 Quick Setup**
+```bash
+# Download a test model to get started
+python -c "
+from transformers import AutoModel, AutoTokenizer
+model = AutoModel.from_pretrained('distilbert-base-uncased')
+tokenizer = AutoTokenizer.from_pretrained('distilbert-base-uncased')
+model.save_pretrained('./test-model')
+tokenizer.save_pretrained('./test-model')
+print('✅ Test model saved to ./test-model')
+"
+```
+
+## 🆘 **Common Issues & Solutions**
+
+| **Issue** | **Cause** | **Solution** |
+|-----------|-----------|--------------|
+| "Config not found" | Missing `config.json` | Download complete model from HuggingFace |
+| "Model weights not found" | Missing `.bin` or `.safetensors` | Ensure model file downloaded completely |
+| "Tokenizer error" | Missing tokenizer files | Re-download model or copy tokenizer files |
+| "Trust remote code" | Custom model code | Add `trust_remote_code=True` parameter |
+
+---
+
+**🎯 Remember**: The AI Model Pruner expects the **exact same format** that HuggingFace uses. If you can load your model with `AutoModel.from_pretrained()`, then it will work with the pruner!
+
+</details>
+
+---
+
 ## 📋 Requirements
 
 ### 🖥️ **Hardware Requirements**
